@@ -1,13 +1,13 @@
-function sum (a, b) {
-  return a + b
-}
+import { describe, expect, test } from '@jest/globals'
+import { USERS_URL } from './config'
+import { generateAuthHash } from './utils'
 
-describe('sum()', () => {
-  test('sum returns proper values', () => {
-    const a = 1
-    const b = 2
-    const expected = a + b
+describe('utils', () => {
+  test('generateAuthHash()', () => {
+    const mockToken = 'this-is-a-test-string'
+    const expected = 'b83f7195011e08c579929a0e2ebf1cc752b0834f585e27be82b3bfc64526bd78'
+    const result = generateAuthHash(mockToken, USERS_URL)
 
-    expect(sum(a, b)).toEqual(expected)
+    expect(result).toEqual(expected)
   })
 })
