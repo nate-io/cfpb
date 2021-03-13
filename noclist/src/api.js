@@ -4,7 +4,7 @@ import {
   AUTH_URL,
   USERS_URL
 } from './config.js'
-import { generateAuthHash } from './utils.js'
+import { formatUserList, generateAuthHash } from './utils.js'
 
 /**
  * Network call to /auth endpoint
@@ -33,4 +33,27 @@ export const fetchUsers = (token) => {
       'X-Request-Checksum': hash
     }
   })
+}
+
+/**
+ * Call auth endpoint & extract auth token
+ * @returns {string} auth token
+ */
+export const getAuthToken = async () => {
+  const tokenHeaderKey = 'badsec-authentication-token'
+  const response = await fetchAuthToken()
+  const { [tokenHeaderKey]: token } = response?.headers
+
+  return token
+}
+
+/**
+ * Retrieve the list of users from server
+ * @param {string} token authorizing API access from /auth
+ * @returns {string} newline delimited user list
+ */
+export const getUsers = async (token) => {
+  const { data } = await fetchUsers(token)
+
+  return formatUserList(data)
 }
