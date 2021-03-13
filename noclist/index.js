@@ -37,6 +37,7 @@ export const getAuthToken = async () => {
   }
 }
 
+// eslint-disable-next-line
 const token = await getAuthToken()
 const users = await getUsers(token)
 
