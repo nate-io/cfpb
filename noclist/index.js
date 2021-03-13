@@ -1,9 +1,9 @@
 import crypto from 'crypto'
 import axios from 'axios'
 
-const BASE_URL = 'http://0.0.0.0:8888'
-const AUTH_URL = '/auth'
-const USERS_URL = '/users'
+export const BASE_URL = 'http://0.0.0.0:8888'
+export const AUTH_URL = '/auth'
+export const USERS_URL = '/users'
 
 /* TODO: 
   1. add resilient network call wrapper
@@ -11,18 +11,14 @@ const USERS_URL = '/users'
 */
 
 /**
- * Fetch API auth token
+ * Call auth endpoint & extract auth token
  * @returns {string} auth token
  */
-const getAuthToken = async () => {
+export const getAuthToken = async () => {
   const tokenHeaderKey = 'badsec-authentication-token'
 
   try {
-    const response = await axios({
-      baseURL: BASE_URL,
-      url: AUTH_URL,
-      method: 'head'
-    })
+    const response = await fetchAuthToken()
     const { [tokenHeaderKey]: token } = response?.headers
 
     return token
@@ -32,16 +28,30 @@ const getAuthToken = async () => {
 }
 
 /**
- * Concat params and hash with sha256
- * @param {string} authToken for API
- * @param {string} endpoint to fetch
- * @returns {string} hashed string 
+ * Network call to /auth endpoint
+ * @returns {object} axios Promise
  */
-const generateAuthHash = (authToken, endpoint) => {
-  return crypto
-    .createHash('sha256')
-    .update(`${authToken}${endpoint}`)
-    .digest('hex')
+export const fetchAuthToken = () => {
+  return axios({
+    baseURL: BASE_URL,
+    url: AUTH_URL,
+    method: 'head'
+  })
+}
+
+/**
+ * Network call to /users endpoint
+ * @returns {object} axios Promise
+ */
+export const fetchUsers = (hash) => {
+  return axios({
+    baseURL: BASE_URL,
+    url: USERS_URL,
+    method: 'get',
+    headers: {
+      'X-Request-Checksum': hash
+    }
+  })
 }
 
 /**
@@ -49,20 +59,11 @@ const generateAuthHash = (authToken, endpoint) => {
  * @param {string} token authorizing API access from /auth
  * @returns {string} newline delimited user list
  */
-const getUsers = async (token) => {
+ export const getUsers = async (token) => {
   const hash = generateAuthHash(token, USERS_URL)
 
-  console.log({ token, hash })
-
   try {
-    const { data } = await axios({
-      baseURL: BASE_URL,
-      url: USERS_URL,
-      method: 'get',
-      headers: {
-        'X-Request-Checksum': hash
-      }
-    })
+    const { data } = await fetchUsers(hash)
 
     return formatUserList(data)
   } catch (error) {
@@ -75,8 +76,21 @@ const getUsers = async (token) => {
  * @param {string} users 
  * @returns {array} stringified JSON
  */
-const formatUserList = (users) => {
+ export const formatUserList = (users) => {
   return JSON.stringify(users.split('\n'))
+}
+
+/**
+ * Concat params and hash value with sha256
+ * @param {string} authToken for API
+ * @param {string} endpoint to fetch
+ * @returns {string} hashed string 
+ */
+export const generateAuthHash = (authToken, endpoint) => {
+  return crypto
+    .createHash('sha256')
+    .update(`${authToken}${endpoint}`)
+    .digest('hex')
 }
 
 const token = await getAuthToken()
