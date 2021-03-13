@@ -5,6 +5,11 @@ const BASE_URL = 'http://0.0.0.0:8888'
 const AUTH_URL = '/auth'
 const USERS_URL = '/users'
 
+/* TODO: 
+  1. add resilient network call wrapper
+  2. testing
+*/
+
 /**
  * Fetch API auth token
  * @returns {string} auth token
