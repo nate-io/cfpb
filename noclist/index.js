@@ -1,9 +1,8 @@
 /* TODO: 
   1. add resilient network call wrapper
-  2. testing
 */
-import { fetchAuthToken, fetchUsers } from './api.js'
-
+import { fetchAuthToken, fetchUsers } from './src/api.js'
+import { formatUserList } from './src/utils'
 
 /**
  * Call auth endpoint & extract auth token
@@ -36,15 +35,6 @@ export const getAuthToken = async () => {
   } catch (error) {
     console.log(error)
   }
-}
-
-/**
- * Convert newline delimited string to JSON array
- * @param {string} users 
- * @returns {array} stringified JSON
- */
- export const formatUserList = (users) => {
-  return JSON.stringify(users.split('\n'))
 }
 
 const token = await getAuthToken()

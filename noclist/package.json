@@ -7,7 +7,7 @@
     "start": "node --trace-warnings index.js",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage --watch"
   },
   "type": "module",
   "engines": {
@@ -25,24 +25,26 @@
       "ecmaVersion": 12,
       "sourceType": "module"
     },
-    "rules": {
-    }
+    "rules": {}
   },
   "jest": {
     "coverageThreshold": {
       "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
         "statements": -10
       }
     },
-    "moduleFileExtensions": [ "js" ],
+    "moduleFileExtensions": [
+      "js"
+    ],
     "transform": {}
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "axios-mock-adapter": "^1.19.0",
     "eslint": "^7.22.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
