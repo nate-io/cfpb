@@ -7,22 +7,53 @@
     "start": "node --trace-warnings index.js",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage --watch"
   },
   "type": "module",
   "engines": {
     "node": ">=14.15"
   },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": [
+      "standard"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {}
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": -10
+      }
+    },
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "transform": {}
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "axios-mock-adapter": "^1.19.0",
     "eslint": "^7.22.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1"
+    "eslint-plugin-promise": "^4.3.1",
+    "jest": "^26.6.3"
   },
   "dependencies": {
+    "@types/jest": "^26.0.20",
     "axios": "^0.21.1",
     "jsdoc": "^3.6.6"
   }
