@@ -1,0 +1,15 @@
+{
+  "name": "noclist",
+  "version": "1.0.0",
+  "description": "Extract data from janky noclist server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=14.15"
+  },
+  "author": "",
+  "license": "ISC"
+}
