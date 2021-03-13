@@ -15,4 +15,6 @@ export const setupAxiosMock = () => {
   mockAxios
     .onGet('/users')
     .reply(200, { users: MOCK_USER_LIST })
+
+  return mockAxios
 }
