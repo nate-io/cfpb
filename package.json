@@ -21,7 +21,9 @@
     "extends": [
       "standard"
     ],
-    "ignorePatterns": ["index.js"],
+    "ignorePatterns": [
+      "index.js"
+    ],
     "parserOptions": {
       "ecmaVersion": 12,
       "sourceType": "module"
@@ -43,8 +45,8 @@
     "moduleFileExtensions": [
       "js"
     ],
-    "coveragePathIgnorePatterns" : [
-      "src/testConfig.js" 
+    "coveragePathIgnorePatterns": [
+      "src/testConfig.js"
     ],
     "transform": {}
   },
