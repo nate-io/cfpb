@@ -21,7 +21,7 @@ A guided tour to help parse the solution a bit faster:
 
 ```
 .
-+-- index.js            // entry, functionality in src
++-- index.js            // entry, functionality lives in src
 +-- src
 |   +-- api.js          // network calls and attendant functionality
 |   +-- api.test.js
@@ -43,9 +43,9 @@ Going a bit deeper I sought to break apart the functionality into discrete layer
 2. controller function (functions prepended with `get-` in `api.js`)
    1. reusable helpers implementing a piece of discrete business logic
    2. call network functions
-   3. extract & format data before returning
+   3. extract & format network data before returning
 3. network function (functions prepended with `fetch-` in `api.js`)
    1. stores config for the network call
-   2. usually executes network call but here executes resilientFetch()
+   2. usually executes network call but instead delegates to resilientFetch()
 4. network execution (`resilientFetch`)
-   1. this is the retry function which implements safe handling as well as the requested retry logic 
+   1. this is the retry function which implements error handling as well as the requested retry logic 
