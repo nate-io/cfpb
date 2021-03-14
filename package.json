@@ -7,7 +7,7 @@
     "start": "node --trace-warnings index.js",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --watchAll"
   },
   "type": "module",
   "engines": {
@@ -15,19 +15,25 @@
   },
   "eslintConfig": {
     "env": {
-      "browser": true,
+      "node": true,
       "es2021": true
     },
     "extends": [
       "standard"
     ],
+    "ignorePatterns": [
+      "index.js"
+    ],
     "parserOptions": {
       "ecmaVersion": 12,
       "sourceType": "module"
     },
-    "rules": {}
+    "rules": {
+      "no-unsafe-finally": 0
+    }
   },
   "jest": {
+    "collectCoverage": true,
     "coverageThreshold": {
       "global": {
         "branches": 90,
@@ -38,6 +44,9 @@
     },
     "moduleFileExtensions": [
       "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/testConfig.js"
     ],
     "transform": {}
   },
