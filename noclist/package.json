@@ -42,6 +42,9 @@
     "moduleFileExtensions": [
       "js"
     ],
+    "coveragePathIgnorePatterns" : [
+      "src/testConfig.js" 
+    ],
     "transform": {}
   },
   "author": "",

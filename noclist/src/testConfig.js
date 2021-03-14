@@ -7,14 +7,31 @@ export const MOCK_USER_LIST = 'abc\ndef\nghi'
 
 export const setupAxiosMock = () => {
   const mockAxios = new MockAdapter(axios)
+  const endpoints = ['/auth', '/users']
 
   mockAxios
-    .onHead('/auth')
+    .onHead(endpoints[0])
     .reply(200, {}, { 'badsec-authentication-token': MOCK_TOKEN })
 
   mockAxios
-    .onGet('/users')
+    .onGet(endpoints[1])
     .reply(200, MOCK_USER_LIST)
 
-  return mockAxios
+  /**
+     * For each endpoint, for mock server to throw one
+     * network error and one timeout error
+     */
+  const makeServerJanky = () => {
+    endpoints.forEach(endpoint => {
+      mockAxios
+        .onHead(endpoint)
+        .networkErrorOnce()
+
+      mockAxios
+        .onGet(endpoint)
+        .timeoutOnce()
+    })
+  }
+
+  return makeServerJanky
 }
