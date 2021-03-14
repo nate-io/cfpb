@@ -21,6 +21,7 @@
     "extends": [
       "standard"
     ],
+    "ignorePatterns": ["index.js"],
     "parserOptions": {
       "ecmaVersion": 12,
       "sourceType": "module"

@@ -5,33 +5,36 @@ export const MOCK_TOKEN = 'this-is-a-test-string'
 export const MOCK_TOKEN_HASH = 'b83f7195011e08c579929a0e2ebf1cc752b0834f585e27be82b3bfc64526bd78'
 export const MOCK_USER_LIST = 'abc\ndef\nghi'
 
-export const setupAxiosMock = () => {
-  const mockAxios = new MockAdapter(axios)
-  const endpoints = ['/auth', '/users']
+/**
+ * Setup normal, well behaved, endpoints
+ */
+export const setupGoodAxiosServer = () => {
+  const mockServer = new MockAdapter(axios)
 
-  mockAxios
-    .onHead(endpoints[0])
+  mockServer
+    .onHead('/auth')
     .reply(200, {}, { 'badsec-authentication-token': MOCK_TOKEN })
 
-  mockAxios
-    .onGet(endpoints[1])
+  mockServer
+    .onGet('/users')
     .reply(200, MOCK_USER_LIST)
+}
 
-  /**
-     * For each endpoint, for mock server to throw one
-     * network error and one timeout error
-     */
-  const makeServerJanky = () => {
-    endpoints.forEach(endpoint => {
-      mockAxios
-        .onHead(endpoint)
-        .networkErrorOnce()
+/**
+ * Setup endpoints which throw internal errors once before recovering
+ */
+export const setupJankyAxiosServer = () => {
+  const mockServer = new MockAdapter(axios)
 
-      mockAxios
-        .onGet(endpoint)
-        .timeoutOnce()
-    })
-  }
+  mockServer
+    .onHead('/auth')
+    .replyOnce(500)
+    .onHead('/auth')
+    .reply(200, {}, { 'badsec-authentication-token': MOCK_TOKEN })
 
-  return makeServerJanky
+  mockServer
+    .onGet('/users')
+    .replyOnce(500)
+    .onGet('/users')
+    .reply(200, MOCK_USER_LIST)
 }

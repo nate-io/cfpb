@@ -8,14 +8,15 @@ import {
   validateFetch
 } from './api'
 import {
-  setupAxiosMock,
+  setupGoodAxiosServer,
+  setupJankyAxiosServer,
   MOCK_TOKEN,
   MOCK_TOKEN_HASH,
   MOCK_USER_LIST
 } from './testConfig'
 import { BASE_URL, AUTH_URL, USERS_URL } from './config'
 
-setupAxiosMock()
+setupGoodAxiosServer()
 
 describe('api', () => {
   test('fetchAuthToken() invokes the /auth endpoint', async () => {
@@ -24,6 +25,7 @@ describe('api', () => {
 
     // ensure network call correctness
     expect(config?.url).toEqual(AUTH_URL)
+    // inspect data correctness
     expect(headers['badsec-authentication-token']).toEqual(MOCK_TOKEN)
   })
 
@@ -67,7 +69,6 @@ describe('api', () => {
 
   test('validateFetch() should exit process when threshold crossed', () => {
     const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
-
     const request = {
       baseURL: BASE_URL,
       url: AUTH_URL,
@@ -93,5 +94,18 @@ describe('api', () => {
     expect(typeof result).toBe('object')
     expect(result?.then).toBeTruthy()
     expect(typeof result?.then).toBe('function')
+  })
+
+  test('resilientFetch() should handle network & timeout errors', async () => {
+    const request = {
+      baseURL: BASE_URL,
+      url: AUTH_URL,
+      method: 'head'
+    }
+    // first setup server to make it faulty
+    setupJankyAxiosServer()
+
+    const result = await resilientFetch(request)
+    expect(result.status).toEqual(200)
   })
 })
