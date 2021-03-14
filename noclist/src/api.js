@@ -11,28 +11,37 @@ import { formatUserList, generateAuthHash } from './utils.js'
 /**
  * Execute provided request up to 3 times before exiting process with status code 1
  * @param {object} request config to execute
- * @param {boolean} error previous execution had error
  * @param {number} attempts made thus far
+ * @param {function} [validator] retry logic
  */
-export const resilientFetch = async (request, hasError = false, attempts = 0) => {
+export const resilientFetch = async (request, attempts = 0, validator = validateFetch) => {
   let response = null
 
   try {
-    if (attempts === 0) throw new Error('testing')
-
     response = await axios(request)
   } catch (error) {
-    hasError = true
-    // send to log handler/service
+    // catch & send to log handler/service
   } finally {
-    if (response?.status === 200) return response
-
-    // check retry threshold & exit process when reached
-    if (attempts >= NETWORK_RETRY_MAX) process.exit(1)
-
-    // otherwise retry
-    return resilientFetch(request, hasError, ++attempts)
+    return validator(request, response, attempts)
   }
+}
+
+/**
+ * Validator function to inspect HTTP response to determine retry status
+ * @param {object} request to execute
+ * @param {*} response from previous request execution
+ * @param {number} attempts previously made
+ * @returns either a correct HTTP response, process exit, or caller recursion
+ */
+export const validateFetch = (request, response, attempts) => {
+  // success
+  if (response?.status === 200) return response
+
+  // check retry threshold & exit process when reached
+  if (attempts >= NETWORK_RETRY_MAX) process.exit(1)
+
+  // otherwise retry
+  return resilientFetch(request, ++attempts)
 }
 
 /**
