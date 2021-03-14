@@ -1,9 +1,11 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, jest, test } from '@jest/globals'
 import {
   fetchAuthToken,
   fetchUsers,
   getAuthToken,
-  getUsers
+  getUsers,
+  resilientFetch,
+  validateFetch
 } from './api'
 import {
   setupAxiosMock,
@@ -11,11 +13,11 @@ import {
   MOCK_TOKEN_HASH,
   MOCK_USER_LIST
 } from './testConfig'
-import { AUTH_URL, USERS_URL } from './config'
+import { BASE_URL, AUTH_URL, USERS_URL } from './config'
 
 setupAxiosMock()
 
-describe('api - network calls', () => {
+describe('api', () => {
   test('fetchAuthToken() invokes the /auth endpoint', async () => {
     const response = await fetchAuthToken()
     const { config, headers } = response
@@ -36,9 +38,7 @@ describe('api - network calls', () => {
     // inspect data correctness
     expect(data).toEqual(MOCK_USER_LIST)
   })
-})
 
-describe('api - control functions', () => {
   test('getAuthToken() should return the auth token string', async () => {
     const response = await getAuthToken()
 
@@ -50,5 +50,48 @@ describe('api - control functions', () => {
     const expected = JSON.stringify(MOCK_USER_LIST.split('\n'))
 
     expect(response).toEqual(expected)
+  })
+
+  test('validateFetch() should return HTTP response on 200', () => {
+    const request = {
+      baseURL: BASE_URL,
+      url: AUTH_URL,
+      method: 'head'
+    }
+    const response = { status: 200 }
+    const attempts = 0
+    const result = validateFetch(request, response, attempts)
+
+    expect(result).toEqual(response)
+  })
+
+  test('validateFetch() should exit process when threshold crossed', () => {
+    const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
+
+    const request = {
+      baseURL: BASE_URL,
+      url: AUTH_URL,
+      method: 'head'
+    }
+    const response = { status: 500 }
+    const attempts = 2
+    validateFetch(request, response, attempts)
+
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
+
+  test('validateFetch() should retry as needed by returning Promise', () => {
+    const request = {
+      baseURL: BASE_URL,
+      url: AUTH_URL,
+      method: 'head'
+    }
+    const response = { status: 500 }
+    const attempts = 0
+    const result = validateFetch(request, response, attempts)
+
+    expect(typeof result).toBe('object')
+    expect(result?.then).toBeTruthy()
+    expect(typeof result?.then).toBe('function')
   })
 })
